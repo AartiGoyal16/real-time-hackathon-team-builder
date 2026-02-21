@@ -24,14 +24,34 @@ User registration & login (JWT authentication)
 Create and update user profile
 Create and manage teams
 Protected routes using middleware
-Real-time communication with Socket.io
+Real-time chat using Socket.io
 Secure password hashing with bcrypt
 
 Project Structure
 
 hackTeam/
-   -> backend/
-   -> frontend/
+   -> backend/   #Express Server, APIs, Socket.io, MongoDB 
+   -> frontend/  #React (Vite) client application
+
+## API Endpoints
+
+Auth:
+POST /api/auth/register - Register new user
+POST /api/auth/login -Login user
+
+User:
+GET /api/user/profile - Get loggedin user profile (Protected)
+PUT /api/user/update -Update user profile (Protected)
+
+Team:
+POST /api/team/create - Create a new team (Protected)
+GET /api/team/all - Get all teams (Protected)
+POST /api/team/join/:teamId - Join a team (Protected)
+POST /api/team/leave/:teamId - Leave a team (Protected)
+GET /api/team/recommend - Get recommend teams (Protected)
+
+Messages:
+GET /api/message/:teamId - Get message history of a team (Protected)
 
 Installation
 
@@ -54,7 +74,5 @@ JWT_SECRET=your_secret_key
 
 
 Project Status
-This project is currently under development.
-Backend core authentication and team APIs are implemented.
-Socket.io integration is in progress.
-Frontend setup is initialized using Vite (UI implementation pending).
+Backend: Completed (including real-time messaging with Socket.io)
+Frontend: In Progress
