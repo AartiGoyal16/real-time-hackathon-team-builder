@@ -1,14 +1,17 @@
-Real-Time Hackathon Team Builder
+## Real-Time Hackathon Team Builder
 
 A full-stack MERN application that enables developers to connect, build teams, and collaborate in real-time during hackathons.
 
-Tech Stack
+## Tech Stack
 
 Frontend
 
-React (Vite)
+Next.js
+React
+TypeScript
 Axios
 Socket.io-client
+Tailwind CSS
 
 Backend
 
@@ -19,7 +22,7 @@ Mongoose
 JWT Authentication
 Socket.io
 
-Features
+## Features
 User registration & login (JWT authentication)
 Create and update user profile
 Create and manage teams
@@ -27,11 +30,14 @@ Protected routes using middleware
 Real-time chat using Socket.io
 Secure password hashing with bcrypt
 
-Project Structure
+## Project Structure
 
 hackTeam/
-   -> backend/   #Express Server, APIs, Socket.io, MongoDB 
-   -> frontend/  #React (Vite) client application
+   -> backend/   #Express APIs, Socket.io, MongoDB 
+   -> frontend/  #Next.js application
+      ->app/
+      ->components/
+      ->public/
 
 ## API Endpoints
 
@@ -50,7 +56,7 @@ POST /api/team/join/:teamId - Join a team (Protected)
 POST /api/team/leave/:teamId - Leave a team (Protected)
 GET /api/team/recommend - Get recommend teams (Protected)
 
-Messages:
+## Messages:
 GET /api/message/:teamId - Get message history of a team (Protected)
 
 Installation
@@ -60,19 +66,22 @@ cd backend
 npm install
 npm run dev
 
-Frontend
+Frontend (Next.js)
 cd frontend
 npm install
 npm run dev
 
-Environment Variables (backend/config.env)
+## Environment Variables (backend/config.env)
 Create a config.env file inside the backend folder
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
 
 
+## Recent Updates
+ - Migrated frontend from Vite to Next.js for better routing and scalability
 
-Project Status
+
+## Project Status
 Backend: Completed (including real-time messaging with Socket.io)
 Frontend: In Progress
