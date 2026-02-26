@@ -13,9 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-[#0f172a] text-white">
+      <body className="bg-white text-black font-sans min-h-screen flex flex-col">
         <Navbar/>
-        <main className="px-6 md:px-20 py-10 min-h-screen">
+        <main className="flex-1 flex flex-col">
           {children}
         </main>
       </body>

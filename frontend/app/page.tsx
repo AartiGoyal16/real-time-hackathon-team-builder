@@ -12,30 +12,29 @@ export default function Home(){
   },[]);
 
   return(
-    <div className="text-center mt-20">
-      <h1 className="text-5xl font-bold text-indigo-500 mb-6">
-        Build Your Hackathon Team
-      </h1>
+    <div className="flex flex-col flex-1 border-x border-gray-300 mx-8 md:mx-16">
 
-      <p className="text-gray-400 mb-8">
-        Real-time team building platform
-      </p>
+      {/* Hero Section */}
+      <section className="flex flex-col items-center justify-center flex-1 py-20 px-4 text center">
 
-      {isLoggedIn?(
-        <Link
-         href="/dashboard"
-         className="bg-indigo-600 px-6 py-3 rounded-lg hover-bg-indigo-500"
-        >
-          Go to Dashboard
-        </Link>
-      ):(
-        <Link
-         href="/login"
-          className="bg-indigo-600 px-6 py-3 rounded-lg hover:big-indigo-500"
-        >
-          Get Started
-        </Link>
-      )}
+        {/* Date/Status Badges (Optional layout elements from the design) */}
+        <div className="flex flex-wrap justify-center gap-4 mb-10">
+          <div className="flex items-center gap-2 border border-gray-400 rounded-full px-4 py-1.5 text-xs font-semibold text-gray-600 tracking-wide uppercase">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Real-Time Matching
+          </div>
+
+          <div className="flex items-center gap-2 border border-gray-400 rounded-full px-4 py-1.5 text-xs font-semibold text-gray-600 tracking-wide uppercase">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2V2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+              100% Free
+          </div>
+        </div>
+
+        {/* Main Title & Subtitle */}
+      </section>
+
+
     </div>
   );
 }
