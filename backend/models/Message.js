@@ -1,25 +1,25 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
-const messageSchema=new mongoose.Schema(
+const messageSchema = new mongoose.Schema(
     {
-        teamId:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"Team",
-            required:true,
+        teamId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Team",
+            required: true,
         },
 
-        user:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"User",
-            required:true,
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "hackTeamUser",
+            required: true,
         },
 
-        text:{
-            type:String,
-            required:true,
+        text: {
+            type: String,
+            required: true,
         },
     },
-    {timeStamps:true}
+    { timestamps: true }
 );
 
-module.exports=mongoose.model("Message",messageSchema);
+module.exports = mongoose.model("Message", messageSchema);

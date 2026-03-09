@@ -23,9 +23,7 @@ export default function Login(){
                 password,
             });
 
-            const token=res.data.token;
-
-            localStorage.setItem("token",token);
+            localStorage.setItem("user",JSON.stringify(res.data.user));
 
             router.push("/");
         }
@@ -39,22 +37,28 @@ export default function Login(){
     };
 
     return(
-        <div className="min-h-screen flex items-center justify-center bg-[#0f172a]">
-            <div className="w-full max-w-md bg-[#1e293b] p-8 rounded-2xl shadow-xl border border-gray-700">
-                <h2 className="text-3xl font-bold mb-6 text-center text-white">
-                    Login
-                </h2>
+        <div className="flex-1 flex flex-col items-center justify-center border-x border-gray-300 mx-8 md:mx-16 py-20 px-4">
+            <div className="w-full max-w-md">
 
+                {/* Header */}
+                <div className="text-center mb-10">
+                    <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
+                        Welcome <span className="text-blue-600">Back</span>
+                    </h1>
+
+                    <p className="text-gray-600 font-medium">
+                        Log in to manage your hackathon team.
+                    </p>
+                </div>
+
+                {/* Error Message */}
                 {error && (
-                    <div className="bg-red-500/10 border border-red-500 text-red-400 p-3 rounded mb-4 text-sm">
+                    <div className="bg-red-50 border border-red-500 test-red-600 p-3 rounded mb-6 text-sm font-smeibold">
                         {error}
                         {error.toLowerCase().includes("not") && (
-                            <div className="mt-2">
+                            <div className="mt-2 font-normal text-red-500">
                                 Don't have an account?{" "}
-                                <Link
-                                 href="/register"
-                                 className="text-indigo-400 hover:underline"
-                                >
+                                <Link href="/register" className="font-bold underline hover:text-red-700">
                                     Register here
                                 </Link>
                             </div>
@@ -62,39 +66,37 @@ export default function Login(){
                     </div>
                 )}
 
-                <input
-                type="email"
-                placeholder="Enter your email..."
-                className="w-full p-3 mb-4 rounded-lg bg-[#0f127a] border border-gray-600 text-white placeholder-gray-400 focus:border-indigo-500"
-                value={email}
-                onChange={(e)=>setEmail(e.target.value)}
-                />
+                {/* Form Container */}
+                <div className="border border-gray-300 p-8">
 
-                <input
-                type="password"
-                placeholder="Enter your password..."
-                className="w-full p-3 mb-6 rounded-lg bg-[#0f172a] border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500"
-                value={password}
-                onChange={(e)=>setPassword(e.target.value)}
-                />
+                    <div className="mb-6">
+                        <label className="block text-sm font-bold text-black mb-2 uppercase tracking-wide">
+                            Email Address
+                        </label>
 
-                <button
-                onClick={handleLogin}
-                disabled={loading}
-                className="w-full bg-indigo-600 py-3 rounded-lg hover:bg-indigo-500 transition disabled:opacity-50 font-semibold"
-                >
-                    {loading?"Logging in...":"Login"}
-                </button>
+                        <input type="email" placeholder="Enter your email..." className="w-full p-3 bg-white border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-colors" value={email} onChange={(e)=>setEmail(e.target.value)}/>
+                    </div>
 
-                <p className="text-gray-400 text-sm mt-6 text-center">
-                    Don't have an account?{" "}
-                    <Link
-                     href="/register"
-                     className="text-indigo-400 hover:underline"
-                    >
-                        Register
-                    </Link>
-                </p>
+                    <div className="mb-8">
+                        <label className="block text-sm font-bold text-black mb-2 uppercase tracking-wide">
+                            Password
+                        </label>
+
+                        <input type="password" placeholder="Enter your password..." className="w-full p-3 bg-white border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-colors" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+                    </div>
+
+                    <button onClick={handleLogin} disabled={loading} className="w-full bg-black text-white py-4 font-bold uppercase tracking-widest hover:bg-gray-800 disabled:opacity-50 transition-colors">
+                        {loading? "Logging in...":"Login"}
+                    </button>
+
+                    {/* Register Link */}
+                    <div className="mt-6 text-center text-sm font-semibold text-gray-600">
+                        Don't have an account?{" "}
+                        <Link href="/register" className="text-blue-600 hover:text-blue-800 hover:underline">
+                            Register here.
+                        </Link>
+                    </div>
+                </div>
             </div>
         </div>
     );

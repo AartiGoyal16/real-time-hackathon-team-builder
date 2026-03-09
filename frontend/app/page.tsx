@@ -7,8 +7,8 @@ export default function Home(){
   const [isLoggedIn,setIsLoggedIn]=useState(false);
 
   useEffect(()=>{
-    const token=localStorage.getItem("token");
-    setIsLoggedIn(!!token);
+    const user=localStorage.getItem("user");
+    setIsLoggedIn(!!user);
   },[]);
 
   return(
@@ -32,9 +32,43 @@ export default function Home(){
         </div>
 
         {/* Main Title & Subtitle */}
+        <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-none mb-8 max-w-4xl">
+          Build Your <span className="text-blue-600">Hackathon</span><br/>
+          Team
+        </h1>
+
+        <p className="text-base md:text-lg font-medium text-gray-800 max-w-2xl mb-12">
+          Real-time team building platform. Connect with other developers, designers, and researchers to prototype amazing solutions throughout the hackathon.
+        </p>
+
+        {/* Call to Action */}
+        <Link href={isLoggedIn? "/dashboard":"/login"} className="bg-black text-white px-10 py-4 rounded font-bold text-sm hover:bg-gray-800 transitions-colors">
+          {isLoggedIn? "Go to Dashboard":"Get Started"}
+        </Link>
       </section>
 
+      {/* Optional Organizers Section */}
+      <section className="flex flex-col md:flex-row justify-center items-center gap-8 py-16">
+        <div className="flex items-center gap-3 text-sm font-semibold text-gray-700">
+          <span>Powered by:</span>
+          <span className="font-bold text-black text-xl flex items-center gap-2">
+            Next.js & Tailwind
+          </span>
+        </div>
+      </section>
 
+      {/* Partners Footer Strip */}
+      <div className="border border-gray-300 w-full overflow-hidden flex flex-wrap justify-between items-center py-6 px-10 -ml-[1px] -mr-[1px] -mb-[1px]">
+        <div className="font-bold text-blue-600 text-sm">React</div>
+
+        <div className="font-bold text-sky-500 text-sm">Tailwind CSS</div>
+
+        <div className="font-bold text-gray-800 text-sm">Next.js</div>
+
+        <div className="font-bold text-purple-600 text-sm">Axios</div>
+
+        <div className="font-bold text-black text-sm">&lt;~&gt; Code</div>
+      </div>
     </div>
   );
 }

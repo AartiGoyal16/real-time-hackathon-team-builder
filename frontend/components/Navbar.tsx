@@ -2,18 +2,31 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import api from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 export default function Navbar(){
     const [isLoggedIn,setIsLoggedIn]=useState(false);
 
     useEffect(()=>{
-        const token=localStorage.getItem("token");
-        setIsLoggedIn(!!token);
+        const user=localStorage.getItem("user");
+        setIsLoggedIn(!!user);
     },[]);
 
-    const handleLogout=()=>{
-        localStorage.removeItem("token");
-        window.location.reload();
+    const router=useRouter();
+
+    const handleLogout= async()=>{
+        try{
+            await api.post("/auth/logout");
+        }
+        catch(err){
+            console.error("Logout API failed");
+        }
+        finally{
+            localStorage.removeItem("user");
+            setIsLoggedIn(false);
+            router.push("/login");
+        }
     };
 
     return(
