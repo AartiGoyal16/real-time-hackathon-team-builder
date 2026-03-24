@@ -62,6 +62,92 @@ const userSchema=new mongoose.Schema({
         default:""
     },
 
+    followers:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"hackTeamUser"
+    }],
+
+    following:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"hackTeamUser"
+    }],
+
+    experience:[{
+        title: {
+            type:String,required:true
+        },
+
+        company:{
+            type:String,
+            required:true
+        },
+
+        description:{
+            type:String
+        },
+
+        startDate:{
+            type:Date
+        },
+
+        endDate:{
+            type:Date
+        },
+
+        isCurrent:{
+            type:Boolean,
+            default:false
+        }
+    }],
+
+    certificates:[{
+        name:{
+            type:String,
+            required:true
+        },
+
+        link:{
+            type:String
+        },
+
+        dateIssued:{
+            type:Date
+        }
+    }],
+
+    feedback:[{
+        sender:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"hackTeamUser"
+        },
+
+        text:{
+            type:String,
+            required:true
+        },
+
+        rating:{
+            type:Number,
+            min:1,
+            max:5
+        },
+
+        date:{
+            type:Date,
+            default:Date.now
+        }
+    }],
+
+    resume:{
+        type:String,
+        default:null
+    },
+
+    atsScore:{
+        type:Number,
+        default:null
+    },
+
     isVerified:{
         type:Boolean,
         default:false

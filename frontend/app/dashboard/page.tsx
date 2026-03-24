@@ -11,6 +11,8 @@ type Team = {
     requiredSkills: string[];
     members: any[];
     maxMembers: number;
+    createdBy?:string;
+    matchPercentage?:number;
 };
 
 export default function Dashboard() {
@@ -19,6 +21,7 @@ export default function Dashboard() {
     const [skillsInput, setSkillsInput] = useState("");
     const [creating, setCreating] = useState(false);
     const [createMsg, setCreateMsg] = useState({ type: "", text: "" });
+    const [searchQuery,setSearchQuery]=useState("");
 
     const [teams, setTeams] = useState<Team[]>([]);
     const [loadingTeams, setLoadingTeams] = useState(true);
@@ -87,6 +90,16 @@ export default function Dashboard() {
             alert(err.response?.data?.message || "Failed to join team.");
         }
     };
+
+    const filteredTeams=teams.filter((team)=>{
+        const query=searchQuery.toLowerCase();
+
+        const matchName=team.teamName?.toLowerCase().includes(query);
+        const matchDesc=team.description?.toLowerCase().includes(query);
+        const matchSkills=team.requiredSkills?.some(skill=>skill.toLowerCase().includes(query));
+
+        return matchName || matchDesc || matchSkills;
+    });
 
     return (
         <div className="flex-1 border-x border-gray-300 mx-8 md:mx-16 py-12 px-6">
@@ -157,24 +170,36 @@ export default function Dashboard() {
                         Join a Team
                     </h2>
 
+                    <div className="mb-6">
+                        <input type="text" placeholder="Search teams by name or skills..." className="w-full p-4 bg-white border border-gray-300 text-black font-semibold shadow-sm placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all" value={searchQuery} onChange={(e)=> setSearchQuery(e.target.value)}/>
+                    </div>
+
                     <div className="border border-gray-300 divide-y divide-gray-300">
                         {loadingTeams ? (
                             <div className="p-8 text-cengter text-gray-500 font-medium font-mono text-sm uppercase">
                                 Loading Teams...
                             </div>
-                        ) : teams.length === 0 ? (
+                        ) : filteredTeams.length === 0 ? (
                             <div className="p-8 text-center text-gray-500 font-medium">
-                                No teams available yet. Be the first to create one!
+                                {searchQuery?"No teams matched your search":"No teams available yet. Be the first to create one!"}
                             </div>
                         ) : (
-                            teams.map((team) => (
+                            filteredTeams.map((team) => (
                                 <div key={team._id} className="p-6 bg-white hover:bg-gray-50 transition-colors group">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h3 className="text-xl font-bold text-black">
-                                            {team.teamName}
-                                        </h3>
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h3 className="text-xl font-bold text-gray-800 mb-1">
+                                                {team.teamName}
+                                            </h3>
 
-                                        <span className="text-xs font-bold bg-gray-100 text-gray-800 px-2 py-1 border border-gray-300">
+                                            {team.matchPercentage!==undefined && (
+                                                <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 font-bold rounded-full border border-purple-300">
+                                                    {team.matchPercentage}% Match
+                                                </span>
+                                            )}
+                                        </div>
+                                        
+                                        <span className="text-xs font-bold bg-white text-black px-3 py-1 border border-gray-300">
                                             {team.members.length}/
                                             {team.maxMembers} Members
                                         </span>

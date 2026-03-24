@@ -1,5 +1,6 @@
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata = {
   title: "Real-Time Hackathon Team Builder",
@@ -14,10 +15,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-white text-black font-sans min-h-screen flex flex-col">
-        <Navbar/>
-        <main className="flex-1 flex flex-col">
-          {children}
-        </main>
+        <ThemeProvider>
+            <Navbar/>
+            <main className="flex-1 flex flex-col">
+              {children}
+            </main>
+        </ThemeProvider>
       </body>
     </html>
   );

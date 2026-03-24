@@ -3,7 +3,7 @@
 This project allows developers to:
 - Discover hackathon teammates
 - Create and join teams
-- Chat in real-time
+- Real-time communication (Group chat + Direct messaging)
 - Manage user profiles securely
 
 ## Real-Time Hackathon Team Builder
@@ -30,12 +30,38 @@ A full-stack MERN application that enables developers to connect, build teams, a
 - Socket.io
 
 ## Features
+
+### Authentication & Security
 - User registration & login using JWT stored in httpOnly cookies
-- Create and update user profile
-- Create and manage teams
-- Protected routes using middleware
-- Real-time chat using Socket.io
+- Protected routes using authentication middleware
 - Secure password hashing with bcrypt
+- CORS configured with credentials support
+
+### User Features
+- Create and update user profile
+- Public profile view
+- Follow / Unfollow users
+- Search users
+- Search history
+- Recommended users based on profile data
+- Upload resume
+- Upload certificates
+- Add experience and feedback
+- ATS score for resume
+- Theme settings (dark/light mode)
+
+### Team Features
+- Create and manage teams
+- Join and leave teams
+- End team (Admin only)
+- Recommended teams using matching algorithm
+
+### Chat Features
+- Real-time team chat using Socket.io
+- One-to-one direct messaging (DM)
+- Message delete functionality
+- Admin message delete
+- Notifications for new messages
 
 ## Security Features
 
@@ -76,6 +102,26 @@ hackTeam/
 ### Messages
 - GET /api/message/:teamId – Get message history of a team (Protected)
 
+### Direct Messages
+- GET /api/message/dm/:userId – Get direct messages with a user (Protected)
+- POST /api/message/dm – Send direct message (Protected)
+- DELETE /api/message/:messageId – Delete message (Protected)
+
+### Follow
+- POST /api/follow/:userId – Follow user
+- POST /api/unfollow/:userId – Unfollow user
+
+### Resume & Certificates
+- POST /api/user/resume – Upload resume
+- POST /api/user/certificate – Upload certificate
+
+### Feedback & Experience
+- POST /api/user/feedback – Add feedback
+- POST /api/user/experience – Add experience
+
+### ATS
+- POST /api/ats/score – Get ATS score
+
 ## Installation
 
 ### Backend
@@ -103,9 +149,17 @@ CLIENT_URL=your_client_connection_string
 
 ## Recent Updates
  - Migrated frontend from Vite to Next.js for better routing and scalability
- - Added TypeScript support
- - Integrated Tailwind CSS
- - Implemented real-time messaging system
+- Added TypeScript and Tailwind CSS
+- Implemented real-time team chat and direct messaging
+- Added message delete and admin delete functionality
+- Implemented leave team and end team features
+- Improved team matching algorithm
+- Added public profiles and profile search
+- Implemented follow/unfollow system
+- Added resume and certificate upload
+- Added experience and feedback section
+- Implemented ATS score feature
+- Added notification system and theme settings
 
 
 ## Project Status

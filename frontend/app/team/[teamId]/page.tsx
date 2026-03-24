@@ -13,6 +13,8 @@ type Team={
     requiredSkills:string[];
     members:any[];
     maxMembers:number;
+    createdBy:string;
+    hasWon?: boolean;
 };
 
 export default function TeamPage(){
@@ -71,7 +73,45 @@ export default function TeamPage(){
         finally{
             setJoining(false);
         }
-    };     
+    };
+    
+    const handleLeaveTeam=async()=>{
+        if(!confirm("Are you sure you want to leave this team?")) return;
+
+        try{
+            await api.post(`/team/leave/${teamId}`);
+            alert("You have left the team.");
+            router.push("/dashboard");
+        }
+        catch(err:any){
+            alert(err.response?.data?.message || "Failed to leave team.");
+        }
+    };
+
+    const handleEndTeam=async()=>{
+        if(!confirm("WARNING: Are you sure you want to completely end this team? All messages will be permanently deleted!")) return;
+
+        try{
+            await api.delete(`/team/${teamId}`);
+            alert("Team has been ended.");
+            router.push("/dashboard");
+        }
+        catch(err:any){
+            alert(err.response?.data?.message|| "Failed to end team.");
+        }
+    };
+
+    const handleDeclareVictory = async () => {
+        if (!confirm("Are you sure? This will declare your team as the WINNER of the hackathon! This will permanently reward all current members with +500 XP and a Winner badge on their profile!")) return;
+        
+        try {
+            await api.post(`/team/${teamId}/win`);
+            alert("Congratulations! Your team victory has been recorded!");
+            fetchTeam();
+        } catch (err: any) {
+            alert(err.response?.data?.message || "Failed to declare victory.");
+        }
+    };
 
     if(loading){
         return <div className="p-12 text-center text-gray-500 font-mono text-sm uppercase">
@@ -99,12 +139,44 @@ export default function TeamPage(){
                     &larr; Back to Dashboard
                 </Link>
 
-                {!isMember && (
-                    <button onClick={handleJoinTeam} disabled={isFull || joining} className="bg-black text-white px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors disabled:opacity-50">
-                        {joining ? "Joining...":isFull?"Team Full":"Join This Team"}
-                    </button>
-                )}
+                <div className="flex items-center gap-3">
+                    {!isMember ? (
+                        <button onClick={handleJoinTeam} disabled={isFull || joining} className="bg-black text-white px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors disabled:opacity-50">
+                            {joining ? "Joining...":isFull?"Team Full":"Join This Team"}
+                        </button>
+                    ):(
+                        currentUser.id===team.createdBy? (
+                            <>
+                                {!team.hasWon && (
+                                    <button onClick={handleDeclareVictory} className="bg-yellow-400 text-yellow-900 border-2 border-yellow-500 px-6 py-2.5 text-xs font-black uppercase tracking-widest hover:bg-yellow-500 transition-all shadow-sm">
+                                        🏆 Declare Victory
+                                    </button>
+                                )}
+                                <button onClick={handleEndTeam} className="bg-red-600 text-white px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-red-800 transition-colors">
+                                    End Team
+                                </button>
+                            </>
+                        ):(
+                            <button onClick={handleLeaveTeam} className="bg-gray-200 text-black px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-gray-300 transition-colors border border-gray-300">
+                                Leave Team
+                            </button>
+                        )
+                    )}
+                </div>
             </div>
+
+            {team.hasWon && (
+                <div className="mb-6 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 p-6 flex flex-col items-center justify-center text-center shadow-lg transform -rotate-1 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-white/20 rotate-45 scale-150 transform translate-x-1/2"></div>
+                    <span className="text-4xl mb-2 relative z-10">🏆</span>
+                    <h2 className="text-2xl font-black text-yellow-900 uppercase tracking-widest relative z-10 drop-shadow-sm">
+                        Hackathon Champions
+                    </h2>
+                    <p className="text-sm font-bold text-yellow-800 mt-1 relative z-10">
+                        This incredible team built a winning project. All members have received +500 XP!
+                    </p>
+                </div>
+            )}
 
             {/* Header */}
             <div className="mb-10 border-x border-t border-gray-300 p-8 bg-gray-50 shrink-0">
@@ -138,7 +210,7 @@ export default function TeamPage(){
 
             <div className="flex-1">
                 {isMember ? (
-                    <Chat teamId={teamId}/>
+                    <Chat teamId={teamId} adminId={team.createdBy}/>
                 ):(
                     <div className="h-[400px] border border-gray-300 bg-gray-50 flex items-center justify-center flex-col p-8 text-center">
                         <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -6,6 +6,7 @@ const Message = require("./models/Message");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
+const path=require("path");
 
 const http = require("http");
 const { Server } = require("socket.io");
@@ -21,6 +22,7 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+app.use("/uploads",express.static(path.join(__dirname,"uploads")));
 
 app.use("/api/auth", require("./routes/authRoutes"));
 
@@ -29,6 +31,8 @@ app.use("/api/user", require("./routes/userRoutes"));
 app.use("/api/team", require("./routes/teamRoutes"));
 
 app.use("/api/message", require("./routes/messageRoutes"));
+
+app.use("/api/dm",require("./routes/dmRoutes"));
 
 const server = http.createServer(app);
 
@@ -86,8 +90,35 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("deleteMessage", async ({ teamId, messageId }) => {
-        io.to(teamId).emit("messageDeleted", messageId);
+    socket.on("deleteMessage", async ({ teamId, messageId, deleteType, deletedByRole }) => {
+        io.to(teamId).emit("messageDeleted", { messageId, deleteType, deletedByRole });
+    });
+
+    socket.on("registerUser",(userId)=>{
+        socket.join(userId);
+        console.log(`Socket ${socket.id} registered for private DMs: ${userId}`);
+    });
+
+    socket.on("sendDirectMessage", async({receiverId,text})=>{
+        try{
+            const DirectMessage=require("./models/DirectMessage");
+            const newMsg=await DirectMessage.create({
+                sender:socket.userId,
+                receiver:receiverId,
+                text:text
+            });
+
+            io.to(receiverId).emit("receiveDirectMessage",newMsg);
+
+            io.to(socket.userId).emit("receiveDirectMessage",newMsg);
+        }
+        catch(err){
+            console.error("DM Save Error:",err.message);
+        }
+    });
+
+    socket.on("deleteDirectMessage",async({receiverId,messageId,deleteType})=>{
+        io.to(receiverId).emit("directMessageDeleted",{messageId,deleteType});
     });
 
     socket.on("disconnect", () => {

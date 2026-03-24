@@ -12,9 +12,11 @@ type Message = {
         name: string;
     };
     createdAt: string;
+    deletedForEveryone?: boolean;
+    deletedByRole?: string;
 };
 
-export default function Chat({ teamId }: { teamId: string }) {
+export default function Chat({ teamId, adminId }: { teamId: string, adminId?:string }) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState("");
     const [notification, setNotification] = useState("");
@@ -81,8 +83,10 @@ export default function Chat({ teamId }: { teamId: string }) {
             }
         });
 
-        socket.on("messageDeleted", (deletedMessageId: string) => {
-            setMessages((prev) => prev.filter((msg) => msg._id !== deletedMessageId));
+        socket.on("messageDeleted", ({messageId, deleteType, deletedByRole}:{messageId: string, deleteType:string, deletedByRole:string}) => {
+            if(deleteType === "everyone"){
+                setMessages((prev) => prev.map((msg) => msg._id === messageId? {...msg, deletedForEveryone:true, deletedByRole}:msg));
+            }
         });
 
         return () => {
@@ -102,18 +106,38 @@ export default function Chat({ teamId }: { teamId: string }) {
         setNewMessage("");
     };
 
-    const handleDeleteMessage = async (messageId: string) => {
-        if (!confirm("Are you sure you want to delete this message?")) return;
+    const handleDeleteMessage = async (messageId: string, isMine:boolean, isAdmin:boolean) => {
+        const canDeleteEveryone=isMine || isAdmin;
+
+        let deleteType = "me";
+
+        if(canDeleteEveryone){
+            const result=window.prompt('Type "me" to Delete for Me, or "everyone" to Delete for Everyone','me');
+            if(result==="everyone") deleteType= "everyone";
+            else if (result==="me") deleteType="me";
+            else return;
+        }
+        else{
+            if (!confirm("Delete this message for yourself?")) return;
+        }
 
         try {
-            await api.delete(`/message/${messageId}`);
+            await api.delete(`/message/${messageId}`,{data:{deleteType}});
 
-            setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+            if(deleteType==="me"){
+                setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+            }
+            else{
+                const role=isMine? "author":"admin";
+                setMessages((prev) => prev.map((msg) => msg._id !== messageId? {...msg,deletedForEveryone:true, deletedByRole:role}:msg));
 
-            socketRef.current?.emit("deleteMessage", {
-                teamId,
-                messageId,
-            });
+                socketRef.current?.emit("deleteMessage", {
+                    teamId,
+                    messageId,
+                    deleteType: "everyone",
+                    deletedByRole: role
+                });
+            }
         }
         catch (err) {
             alert("Failed to delete message");
@@ -151,6 +175,7 @@ export default function Chat({ teamId }: { teamId: string }) {
 
                 {messages.map((msg, idx) => {
                     const isMine = currentUser && msg.user._id === currentUser.id;
+                    const isAdmin=currentUser && currentUser.id===adminId;
 
                     return (
                         <div key={msg._id || idx} className={`flex flex-col max-w-[80%] ${isMine ? "self-end" : "self-start"}`}>
@@ -163,16 +188,14 @@ export default function Chat({ teamId }: { teamId: string }) {
                                 </span>
 
                                 {/* Delete Button */}
-                                {isMine && msg._id && (
-                                    <button onClick={() => handleDeleteMessage(msg._id)} className="text-[10px] text-red-400 hover:text-red-700 font-bold uppercase">
-                                        Delete
-                                    </button>
-                                )}
+                                <button onClick={() => handleDeleteMessage(msg._id,isMine,isAdmin)} className="text-[10px] text-gray-400 hover:text-red-700 font-bold uppercase transition">
+                                    Delete
+                                </button>
                             </div>
 
                             {/* Message Bubble */}
-                            <div className={`px-4 py-3 text-sm shadow-sm ${isMine ? "bg-black text-white rounded-l-xl rounded-tr-xl" : "bg-white border border-gray-200 text-black rounded-r-xl rounded-t1-xl"}`}>
-                                {msg.text}
+                            <div className={`px-4 py-3 text-sm shadow-sm ${msg.deletedForEveryone? "bg-gray-100 text-gray-500 italic rounded-xl border border-gray-200": (isMine ? "bg-black text-white rounded-l-xl rounded-tr-xl" : "bg-white border border-gray-200 text-black rounded-r-xl rounded-t1-xl")}`}>
+                                {msg.deletedForEveryone?`This message was deleted by ${msg.deletedByRole}`:msg.text}
                             </div>
                         </div>
                     );

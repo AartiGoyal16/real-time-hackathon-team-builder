@@ -25,7 +25,8 @@ export default function Login(){
 
             localStorage.setItem("user",JSON.stringify(res.data.user));
 
-            router.push("/");
+            // router.push("/");
+            window.location.href="/";
         }
         catch(err:any){
             const message=err.response?.data?.message || "Login failed"

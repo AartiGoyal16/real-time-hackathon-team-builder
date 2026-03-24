@@ -34,6 +34,16 @@ const teamSchema=new mongoose.Schema({
     createdBy:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"hackTeamUser"
+    },
+
+    createdAt:{
+        type:Date,
+        default:Date.now
+    },
+
+    hasWon:{
+        type:Boolean,
+        default:false
     }
 
 },{timestamps:true});
