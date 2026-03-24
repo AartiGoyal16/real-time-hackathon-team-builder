@@ -4,4 +4,6 @@ backend/node_modules/
 frontend/node_modules/
 frontend/build/
 backend/dist/
+backend/uploads/*
+!backend/uploads/.gitkeep
 local_notes.md
