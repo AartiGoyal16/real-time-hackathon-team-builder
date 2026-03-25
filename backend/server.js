@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const path=require("path");
+const axios = require('axios');
 
 const http = require("http");
 const { Server } = require("socket.io");
@@ -35,6 +36,11 @@ app.use("/api/team", require("./routes/teamRoutes"));
 app.use("/api/message", require("./routes/messageRoutes"));
 
 app.use("/api/dm",require("./routes/dmRoutes"));
+
+// A simple ping route to keep the server awake
+app.get('/api/ping', (req, res) => {
+  res.status(200).json({ message: "Server is awake" });
+});
 
 const server = http.createServer(app);
 
@@ -131,3 +137,11 @@ io.on("connection", (socket) => {
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+if (process.env.NODE_ENV === "production") {
+  setInterval(() => {
+    axios.get(`${process.env.BACKEND_URL}/api/ping`)
+      .then(() => console.log('Keep-alive: Self-ping successful'))
+      .catch((err) => console.log('Keep-alive: Ping failed', err.message));
+  }, 600000); // 10 minutes
+}
