@@ -39,13 +39,9 @@ export function ThemeProvider({children}:{children:React.ReactNode}){
         });
     };
 
-    if(!mounted){
-        return <div className="invisible">{children}</div>;
-    }
-
     return(
         <ThemeContext.Provider value={{theme,toggleTheme}}>
-            {children}
+            {!mounted? <div className="invisible">{children}</div> : children}
         </ThemeContext.Provider>
     );
 }
