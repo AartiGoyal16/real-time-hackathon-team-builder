@@ -61,7 +61,7 @@ export default function Chat({ teamId, adminId }: { teamId: string, adminId?:str
     };
 
     useEffect(() => {
-        socketRef.current = io("http://localhost:5000", {
+        socketRef.current = io(process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000", {
             withCredentials: true,
         });
 

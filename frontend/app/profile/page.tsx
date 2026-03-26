@@ -266,7 +266,7 @@ export default function ProfilePage() {
                                             )}
 
                                             <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-                                                <a href={`http://localhost:5000${profile.resume}`} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto bg-blue-50 text-blue-700 border border-blue-200 px-6 py-3 font-bold text-sm rounded-full hover:bg-blue-600 hover:text-white hover:border-transparent transition-all shadow-sm flex items-center justify-center gap-2">
+                                                <a href={`${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"}${profile.resume}`} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto bg-blue-50 text-blue-700 border border-blue-200 px-6 py-3 font-bold text-sm rounded-full hover:bg-blue-600 hover:text-white hover:border-transparent transition-all shadow-sm flex items-center justify-center gap-2">
                                                     📄 View My Resume
                                                 </a>
 

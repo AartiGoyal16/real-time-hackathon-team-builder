@@ -26,7 +26,7 @@ export default function Navbar(){
     useEffect(()=>{
         if(!currentUser) return;
 
-        socketRef.current=io("http://localhost:5000",{
+        socketRef.current=io(process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000",{
             withCredentials:true
         });
 
