@@ -49,6 +49,8 @@ export default function PublicProfile(){
     const [followersCount, setFollowersCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [showFollowers, setShowFollowers] = useState(false);
+    const [showFollowing, setShowFollowing] = useState(false);
 
     useEffect(() => {
         const fetchPublicProfile = async () => {
@@ -117,6 +119,35 @@ export default function PublicProfile(){
                 </Link>
             </div>
 
+            {/* User List Modal */}
+            {(showFollowers || showFollowing) && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={() => { setShowFollowers(false); setShowFollowing(false); }}>
+                    <div className="bg-white rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col shadow-2xl animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100">
+                            <h3 className="text-lg font-black text-gray-900 uppercase tracking-wider">{showFollowers ? 'Followers' : 'Following'}</h3>
+                            <button onClick={() => { setShowFollowers(false); setShowFollowing(false); }} className="text-gray-400 hover:text-red-500 font-bold text-xl leading-none">&times;</button>
+                        </div>
+                        <div className="p-4 overflow-y-auto flex-1">
+                            {showFollowers && (!profile.followers || profile.followers.length === 0) && <p className="text-center text-gray-400 font-medium text-sm py-4 italic">No followers yet.</p>}
+                            {showFollowing && (!profile.following || profile.following.length === 0) && <p className="text-center text-gray-400 font-medium text-sm py-4 italic">Not following anyone yet.</p>}
+                            
+                            <div className="flex flex-col gap-3">
+                                {(showFollowers ? profile.followers : profile.following)?.map((u: any, i: number) => (
+                                    <Link key={i} href={`/profile/${u._id || u}`} onClick={() => { setShowFollowers(false); setShowFollowing(false); }} className="flex items-center gap-4 bg-gray-50 border border-gray-100 p-3 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-colors group">
+                                        <div className="w-10 h-10 rounded-full bg-blue-100 border-2 border-white shadow-sm text-blue-600 flex items-center justify-center font-bold text-sm overflow-hidden shrink-0">
+                                            {u.profilePic ? <img src={u.profilePic} className="w-full h-full object-cover"/> : getInitials(u.name)}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-bold text-gray-900 truncate group-hover:text-blue-700 transition-colors">{u.name || "Unknown Hacker"}</h4>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="border border-gray-300 p-8 bg-white w-full max-w-3xl shadow-sm">
                 <div className="mb-8 flex flex-col md:flex-row gap-8 items-start">
                     
@@ -140,13 +171,13 @@ export default function PublicProfile(){
                         </p>
 
                         <div className="flex gap-6 font-bold text-sm mb-6">
-                            <div className="flex flex-col">
-                                <span className="text-2xl text-black leading-none">{followersCount}</span>
-                                <span className="text-gray-400 uppercase tracking-widest text-[10px]">Followers</span>
+                            <div className="flex flex-col cursor-pointer hover:bg-gray-100 p-2 -ml-2 rounded transition-colors group" onClick={() => setShowFollowers(true)}>
+                                <span className="text-2xl text-black leading-none group-hover:text-blue-600 transition-colors">{followersCount}</span>
+                                <span className="text-gray-400 uppercase tracking-widest text-[10px] group-hover:text-blue-500 transition-colors">Followers</span>
                             </div>
-                            <div className="flex flex-col">
-                                <span className="text-2xl text-black leading-none">{followingCount}</span>
-                                <span className="text-gray-400 uppercase tracking-widest text-[10px]">Following</span>
+                            <div className="flex flex-col cursor-pointer hover:bg-gray-100 p-2 rounded transition-colors group" onClick={() => setShowFollowing(true)}>
+                                <span className="text-2xl text-black leading-none group-hover:text-blue-600 transition-colors">{followingCount}</span>
+                                <span className="text-gray-400 uppercase tracking-widest text-[10px] group-hover:text-blue-500 transition-colors">Following</span>
                             </div>
                         </div>
 

@@ -1,5 +1,6 @@
 // User Schema to register
 const mongoose=require("mongoose");
+const bcrypt=require("bcryptjs");
 
 //for skill schema
 const skillSchema=new mongoose.Schema({
@@ -37,8 +38,19 @@ const userSchema=new mongoose.Schema({
 
     password:{
         type:String,
-        required:true,
+        required:function() {
+            return this.authProvider === "local";
+        },
     },
+
+    authProvider: {
+        type: String,
+        enum: ["local", "google"],
+        default: "local"
+    },
+
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
 
     college:{
         type:String
@@ -74,7 +86,8 @@ const userSchema=new mongoose.Schema({
 
     experience:[{
         title: {
-            type:String,required:true
+            type:String,
+            required:true
         },
 
         company:{
@@ -155,6 +168,19 @@ const userSchema=new mongoose.Schema({
 },{
     timestamps:true
 })
+
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) {
+        return;
+    }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+});
+
+// Method to compare candidate password with stored hash
+userSchema.methods.comparePassword = async function (candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+};
 
 const userModel=mongoose.model("hackTeamUser",userSchema);
 module.exports=userModel;

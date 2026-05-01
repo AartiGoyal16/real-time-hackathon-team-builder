@@ -197,7 +197,7 @@ export default function TeamPage(){
                 </p>
 
                 {team.requiredSkills && team.requiredSkills.length>0 && (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 mb-8">
                         <span className="text-xs font-bold text-gray-500 uppercase tracking-wider mr-2 self-center">Skills Needed:</span>
                         {team.requiredSkills.map((skill,idx)=>(
                             <span key={idx} className="text-xs font-bold text-black border-b-2 border-blue-600 px-1 py-0.5">
@@ -206,6 +206,30 @@ export default function TeamPage(){
                         ))}
                     </div>
                 )}
+
+                {/* Team Members List */}
+                <div className="mt-8 border-t border-gray-200 pt-8">
+                    <h3 className="text-sm font-bold text-gray-900 mb-6 uppercase tracking-widest flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                        Team Members ({team.members.length}/{team.maxMembers})
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {team.members.map((member: any) => (
+                            <Link key={member._id || member} href={`/profile/${member._id || member}`} className="flex items-center gap-4 bg-white border border-gray-200 p-4 rounded-xl hover:border-blue-400 hover:shadow-md transition-all group">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 border-2 border-white shadow-sm text-blue-600 flex items-center justify-center font-bold text-lg overflow-hidden shrink-0">
+                                    {member.profilePic ? <img src={member.profilePic} className="w-full h-full object-cover"/> : (member.name ? member.name.charAt(0).toUpperCase() : "?")}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="text-sm font-black text-gray-900 truncate group-hover:text-blue-700 transition-colors flex items-center gap-2">
+                                        {member.name || "Unknown Hacker"}
+                                        {member._id === team.createdBy && <span className="text-[9px] bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded font-bold uppercase tracking-widest border border-yellow-200">Admin</span>}
+                                    </h4>
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest truncate mt-0.5">{member.college || "Hacker"}</p>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             <div className="flex-1">

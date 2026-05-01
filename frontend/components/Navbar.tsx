@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import api from "@/lib/api";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import io, { Socket } from "socket.io-client";
 
 export default function Navbar(){
@@ -14,6 +14,11 @@ export default function Navbar(){
     const [unreadCount,setUnreadCount]=useState(0);
     const socketRef=useRef<Socket | null>(null);
     const [isMobileMenuOpen,setIsMobileOpen]=useState(false);
+    const pathname = usePathname();
+
+    const isAuthRoute = pathname?.startsWith("/login") || pathname?.startsWith("/register") || pathname?.startsWith("/forgot-password") || pathname?.startsWith("/reset-password");
+
+    if (isAuthRoute) return null;
 
     useEffect(()=>{
         const userStr=localStorage.getItem("user");

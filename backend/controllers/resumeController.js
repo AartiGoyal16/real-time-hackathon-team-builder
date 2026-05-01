@@ -43,8 +43,18 @@ exports.uploadAndScoreResume=async(req,res)=>{
         });
         score+=Math.min(20,verbsFound*5);
 
-        if(resumeText.includes("github.com")) score+=10;
-        if(resumeText.includes("linkedin.com")) score+=10;
+        // Use Regex to robustly check for links
+        const githubRegex = /github\.com\/[^\s]+/i;
+        const linkedinRegex = /linkedin\.com\/(?:in|profile)\/[^\s]+/i;
+        const generalUrlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/i;
+
+        if (githubRegex.test(resumeText)) score += 10;
+        if (linkedinRegex.test(resumeText)) score += 10;
+        
+        // Bonus for having other external links (like a personal portfolio)
+        if (generalUrlRegex.test(resumeText) && !githubRegex.test(resumeText) && !linkedinRegex.test(resumeText)) {
+            score += 5;
+        }
 
         const finalAtsScore=Math.min(100,Math.max(0,score));
 

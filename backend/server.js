@@ -15,9 +15,14 @@ const app = express();
 const PORT=process.env.PORT||5000;
 connectDB();
 
+const allowedOrigins = [
+    "http://localhost:3000",
+    process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(
     cors({
-        origin: process.env.CLIENT_URL,
+        origin: allowedOrigins,
         credentials: true,
         methods: ["GET","POST","PUT","DELETE"]
     })
@@ -40,7 +45,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: process.env.CLIENT_URL,
+        origin: allowedOrigins,
         methods: ["GET", "POST"],
         credentials: true,
     },

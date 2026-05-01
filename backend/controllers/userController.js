@@ -3,7 +3,11 @@ const User=require("../models/user");
 //get profile
 exports.getProfile=async(req,res)=>{
     try{
-        const user=await User.findById(req.user.id).populate("feedback.sender", "name profilePic").select("-password");
+        const user=await User.findById(req.user.id)
+            .populate("feedback.sender", "name profilePic")
+            .populate("followers", "name profilePic")
+            .populate("following", "name profilePic")
+            .select("-password");
         res.json(user);
     }
     catch(err){
@@ -31,7 +35,11 @@ exports.updateProfile=async(req,res)=>{
 
 exports.getPublicProfile=async (req,res)=>{
     try{
-        const user=await User.findById(req.params.userId).populate("feedback.sender", "name profilePic").select("-password -phone");
+        const user=await User.findById(req.params.userId)
+            .populate("feedback.sender", "name profilePic")
+            .populate("followers", "name profilePic")
+            .populate("following", "name profilePic")
+            .select("-password -phone");
 
         if(!user){
             return res.status(404).json({message:"User not found"});

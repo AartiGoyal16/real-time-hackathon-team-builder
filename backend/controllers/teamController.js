@@ -23,7 +23,7 @@ exports.getAllTeams=async (req,res)=>{
     try{
         const teams=await Team.find()
         .populate("createdBy","name email")
-        .populate("members","name");
+        .populate("members","name profilePic email reputationScore college");
 
         res.json(teams);
     }

@@ -34,6 +34,8 @@ export default function ProfilePage() {
     const [uploading, setUploading] = useState(false);
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
+    const [showFollowers, setShowFollowers] = useState(false);
+    const [showFollowing, setShowFollowing] = useState(false);
 
     const [collegeInput, setCollegeInput] = useState("");
     const [interestsInput, setInterestsInput] = useState("");
@@ -161,6 +163,16 @@ export default function ProfilePage() {
         }
     };
 
+    const handlePasswordReset = async () => {
+        if (!profile?.email) return;
+        try {
+            await api.post("/auth/forgot-password", { email: profile.email });
+            alert("A password reset link has been sent to your email address!");
+        } catch (err: any) {
+            alert("Failed to send password reset link.");
+        }
+    };
+
     if (loading) return <div className="p-20 text-center text-gray-500 font-mono text-sm uppercase animate-pulse">Loading Your Space...</div>;
     if (!profile) return <div className="p-20 text-center text-red-500 font-bold uppercase">Failed to load profile.</div>;
 
@@ -172,6 +184,35 @@ export default function ProfilePage() {
                     <span className="text-lg leading-none">&larr;</span> Back to Dashboard
                 </Link>
             </div>
+
+            {/* User List Modal */}
+            {(showFollowers || showFollowing) && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={() => { setShowFollowers(false); setShowFollowing(false); }}>
+                    <div className="bg-white rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col shadow-2xl animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100">
+                            <h3 className="text-lg font-black text-gray-900 uppercase tracking-wider">{showFollowers ? 'Followers' : 'Following'}</h3>
+                            <button onClick={() => { setShowFollowers(false); setShowFollowing(false); }} className="text-gray-400 hover:text-red-500 font-bold text-xl leading-none">&times;</button>
+                        </div>
+                        <div className="p-4 overflow-y-auto flex-1">
+                            {showFollowers && (!profile.followers || profile.followers.length === 0) && <p className="text-center text-gray-400 font-medium text-sm py-4 italic">No followers yet.</p>}
+                            {showFollowing && (!profile.following || profile.following.length === 0) && <p className="text-center text-gray-400 font-medium text-sm py-4 italic">Not following anyone yet.</p>}
+                            
+                            <div className="flex flex-col gap-3">
+                                {(showFollowers ? profile.followers : profile.following)?.map((u: any, i: number) => (
+                                    <Link key={i} href={`/profile/${u._id || u}`} onClick={() => { setShowFollowers(false); setShowFollowing(false); }} className="flex items-center gap-4 bg-gray-50 border border-gray-100 p-3 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-colors group">
+                                        <div className="w-10 h-10 rounded-full bg-blue-100 border-2 border-white shadow-sm text-blue-600 flex items-center justify-center font-bold text-sm overflow-hidden shrink-0">
+                                            {u.profilePic ? <img src={u.profilePic} className="w-full h-full object-cover"/> : getInitials(u.name)}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-bold text-gray-900 truncate group-hover:text-blue-700 transition-colors">{u.name || "Unknown Hacker"}</h4>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
                 {!isEditing ? (
@@ -224,15 +265,15 @@ export default function ProfilePage() {
 
                             {/* STATISTICS ROW */}
                             <div className="grid grid-cols-3 gap-4 mb-10 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
-                                <div className="text-center border-r border-gray-200">
-                                    <span className="block text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Followers</span>
-                                    <span className="block text-2xl font-black text-gray-900">{profile.followers?.length || 0}</span>
+                                <div className="text-center border-r border-gray-200 cursor-pointer hover:bg-gray-100 p-2 rounded-xl transition-colors group" onClick={() => setShowFollowers(true)}>
+                                    <span className="block text-gray-400 group-hover:text-blue-500 text-[10px] uppercase font-bold tracking-widest mb-1 transition-colors">Followers</span>
+                                    <span className="block text-2xl font-black text-gray-900 group-hover:text-blue-600 transition-colors">{profile.followers?.length || 0}</span>
                                 </div>
-                                <div className="text-center border-r border-gray-200">
-                                    <span className="block text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Following</span>
-                                    <span className="block text-2xl font-black text-gray-900">{profile.following?.length || 0}</span>
+                                <div className="text-center border-r border-gray-200 cursor-pointer hover:bg-gray-100 p-2 rounded-xl transition-colors group" onClick={() => setShowFollowing(true)}>
+                                    <span className="block text-gray-400 group-hover:text-blue-500 text-[10px] uppercase font-bold tracking-widest mb-1 transition-colors">Following</span>
+                                    <span className="block text-2xl font-black text-gray-900 group-hover:text-blue-600 transition-colors">{profile.following?.length || 0}</span>
                                 </div>
-                                <div className="text-center relative">
+                                <div className="text-center relative p-2">
                                     <span className="block text-teal-500 text-[10px] uppercase font-bold tracking-widest mb-1">Reputation</span>
                                     <span className="block text-2xl font-black text-teal-600">
                                         {profile.reputationScore} <span className="text-teal-300 text-sm">XP</span>
@@ -535,6 +576,12 @@ export default function ProfilePage() {
                                 </button>
                                 <button type="button" onClick={() => setIsEditing(false)} className="px-10 bg-white border-2 border-gray-200 text-gray-600 font-bold tracking-widest uppercase text-sm py-3.5 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all">
                                     Cancel
+                                </button>
+                            </div>
+
+                            <div className="pt-4 text-center">
+                                <button type="button" onClick={handlePasswordReset} className="text-[10px] font-bold text-gray-400 hover:text-blue-600 underline uppercase tracking-widest transition-colors">
+                                    Send Password Reset Link
                                 </button>
                             </div>
 

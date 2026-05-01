@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import api from "@/lib/api";
+import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 export default function Register(){
     const router=useRouter();
@@ -12,6 +13,7 @@ export default function Register(){
     const [email,setEmail]=useState("");
     const [phone,setPhone]=useState("");
     const [password,setPassword]=useState("");
+    const [showPassword,setShowPassword]=useState(false);
 
     const [loading,setLoading]=useState(false);
     const [error,setError]=useState("");
@@ -93,12 +95,26 @@ export default function Register(){
                             Password
                         </label>
 
-                        <input type="password" placeholder="Create a Password..." className="w-full p-3 bg-white border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-colors" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+                        <div className="relative">
+                            <input type={showPassword ? "text" : "password"} placeholder="Create a Password..." className="w-full p-3 bg-white border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-colors pr-16" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-3 text-xs font-bold text-gray-500 hover:text-black">
+                                {showPassword ? "HIDE" : "SHOW"}
+                            </button>
+                        </div>
                     </div>
 
                     <button onClick={handleRegister} disabled={loading} className="w-full bg-black text-white py-4 font-bold uppercase tracking-widest hover:bg-gray-800 disabled:opacity-50 transition-colors">
                         {loading? "Creating Account...":"Register"}
                     </button>
+
+                    {/* Google Separator and Button */}
+                    <div className="my-6 flex items-center w-full">
+                        <hr className="flex-grow border-gray-300" />
+                        <span className="px-3 text-gray-500 text-sm uppercase tracking-widest">Or</span>
+                        <hr className="flex-grow border-gray-300" />
+                    </div>
+
+                    <GoogleAuthButton />
 
                     {/* Login Link */}
                     <div className="mt-6 text-center text-sm font-semibold text-gray-600">
