@@ -390,7 +390,7 @@ export default function PublicProfile(){
                         </div>
                         <div className="flex-1 w-full bg-gray-100" onContextMenu={(e) => e.preventDefault()}>
                             <iframe 
-                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"}${profile.resume}#toolbar=0&navpanes=0&scrollbar=0`} 
+                                src={profile.resume?.startsWith("data:") ? profile.resume : `${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"}${profile.resume}#toolbar=0&navpanes=0&scrollbar=0`} 
                                 className="w-full h-full border-none pointer-events-auto"
                             />
                         </div>

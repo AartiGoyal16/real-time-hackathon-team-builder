@@ -114,13 +114,12 @@ export default function ProfilePage() {
 
         try {
             setUploading(true);
-            const res = await api.post("/user/upload-resume", formData, {
-                headers: { "Content-Type": "multipart/form-data" }
-            });
+            const res = await api.post("/user/upload-resume", formData);
             alert(`Boom! Your ATS Score is ${res.data.atsScore}/100!`);
             window.location.reload();
         } catch (err: any) {
-            alert(err.response?.data?.message || "Resume upload failed.");
+            console.error("Upload error details:", err, err.response);
+            alert(`Error: ${err.response?.data?.message || err.message || "Resume upload failed."}`);
         } finally {
             setUploading(false);
         }
@@ -307,7 +306,7 @@ export default function ProfilePage() {
                                             )}
 
                                             <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-                                                <a href={`${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"}${profile.resume}`} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto bg-blue-50 text-blue-700 border border-blue-200 px-6 py-3 font-bold text-sm rounded-full hover:bg-blue-600 hover:text-white hover:border-transparent transition-all shadow-sm flex items-center justify-center gap-2">
+                                                <a href={profile.resume?.startsWith("data:") ? profile.resume : `${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"}${profile.resume}`} download={profile.resume?.startsWith("data:") ? "resume.pdf" : undefined} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto bg-blue-50 text-blue-700 border border-blue-200 px-6 py-3 font-bold text-sm rounded-full hover:bg-blue-600 hover:text-white hover:border-transparent transition-all shadow-sm flex items-center justify-center gap-2">
                                                     📄 View My Resume
                                                 </a>
 

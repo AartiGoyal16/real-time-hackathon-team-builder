@@ -12,12 +12,9 @@ exports.uploadAndScoreResume=async(req,res)=>{
         const user=await User.findById(req.user.id);
         if(!user) return res.status(404).json({message:"User not found"});
 
-        const resumeUrl=`/uploads/${req.file.filename}`;
-        const physicalPath=path.join(__dirname,"../",req.file.path);
-
-        const dataBuffer=fs.readFileSync(physicalPath);
-        const pdfData=await pdf(dataBuffer);
-        const resumeText=pdfData.text.toLowerCase();
+        const dataBuffer = req.file.buffer;
+        const pdfData = await pdf(dataBuffer);
+        const resumeText = pdfData.text.toLowerCase();
 
         let score=0;
         let matchedSkills=0;
@@ -58,13 +55,16 @@ exports.uploadAndScoreResume=async(req,res)=>{
 
         const finalAtsScore=Math.min(100,Math.max(0,score));
 
-        user.resume=resumeUrl;
+        // Convert the PDF buffer to a Base64 string for database storage
+        const base64Resume = `data:application/pdf;base64,${dataBuffer.toString('base64')}`;
+
+        user.resume=base64Resume;
         user.atsScore=finalAtsScore;
         await user.save();
 
         res.json({
             message:"Resume successfully parsed and uploaded!",
-            resumeUrl,
+            resumeUrl: base64Resume,
             atsScore: finalAtsScore,
             metrics:{
                 wordCount,
